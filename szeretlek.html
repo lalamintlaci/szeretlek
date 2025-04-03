@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Szeretlek Viki</title>
+    <style>
+        body {
+            background-color: #ffdde1;
+            color: #d63384;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+            user-select: none;
+            position: relative;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .counter {
+            font-size: 2em;
+            margin: 20px 0;
+        }
+        .progress-container {
+            width: 100%;
+            background: #ddd;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 20px;
+        }
+        .progress-bar {
+            height: 20px;
+            width: 0%;
+            background: #ff4081;
+            transition: width 0.5s;
+        }
+        .shop, .gift-shop {
+            background: white;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .button-enabled {
+            background-color: #ff4081;
+            color: white;
+        }
+        .button-disabled {
+            background-color: #ddd;
+            color: #aaa;
+        }
+        .animation {
+            position: absolute;
+            font-size: 3em;
+            opacity: 1;
+            animation: floatUp 2s ease-out forwards;
+        }
+        @keyframes floatUp {
+            0% { transform: translateY(0); opacity: 1; }
+            100% { transform: translateY(-100px); opacity: 0; }
+        }
+        @keyframes heartBeat {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.5); }
+            100% { transform: scale(1); }
+        }
+        .heart {
+            animation: heartBeat 1s infinite;
+        }
+        .rosefall {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            animation: fall 4s infinite;
+        }
+        @keyframes fall {
+            0% { top: 0; opacity: 1; }
+            100% { top: 90%; opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <script>
+        // Belépés és név kérés
+        let userName = prompt("Mi a neved?", "Viki");
+        if (!userName) userName = "Viki"; // Alapértelmezett név, ha nincs megadva
+
+        document.title = `Szeretlek ${userName}`;
+
+        // Változók
+        let count = 0;
+        let clickValue = 1;
+        let autoValue = 0;
+        let autoClickerCost = 10;
+        let clickBoostCost = 20;
+        let sendLoveCost = 50;
+        let hugCost = 100;
+        let sendRoseCost = 150;
+        let autoClickerLevel = 0;
+        let clickBoostLevel = 0;
+
+        // Kattintás
+        function incrementCounter() {
+            count += clickValue;
+            updateDisplay();
+        }
+
+        function buyAutoClicker() {
+            if (count >= autoClickerCost) {
+                count -= autoClickerCost;
+                autoValue += 1 + autoClickerLevel;
+                autoClickerCost = Math.floor(autoClickerCost * 1.5);
+                autoClickerLevel++;
+                updateDisplay();
+            }
+        }
+
+        function buyClickBoost() {
+            if (count >= clickBoostCost) {
+                count -= clickBoostCost;
+                clickValue += 1 + clickBoostLevel;
+                clickBoostCost = Math.floor(clickBoostCost * 1.5);
+                clickBoostLevel++;
+                updateDisplay();
+            }
+        }
+
+        function animateEmojis(emoji, event) {
+            for (let i = 0; i < 100; i++) {
+                setTimeout(() => {
+                    const el = document.createElement("div");
+                    el.textContent = emoji;
+                    el.className = "animation";
+                    el.style.left = `${event.clientX + (Math.random() * 100 - 50)}px`;
+                    el.style.top = `${event.clientY + (Math.random() * 100 - 50)}px`;
+                    document.body.appendChild(el);
+                    setTimeout(() => el.remove(), 2000);
+                }, i * 10);
+            }
+        }
+
+        function sendLove(event) {
+            if (count >= sendLoveCost) {
+                count -= sendLoveCost;
+                animateEmojis("💋", event);
+                updateDisplay();
+            }
+        }
+
+        function hug(event) {
+            if (count >= hugCost) {
+                count -= hugCost;
+                animateEmojis("🤗", event);
+                updateDisplay();
+            }
+        }
+
+        function sendRose(event) {
+            if (count >= sendRoseCost) {
+                count -= sendRoseCost;
+                animateEmojis("🌹", event);
+                updateDisplay();
+            }
+        }
+
+        function updateDisplay() {
+            document.getElementById("count").textContent = count;
+            document.getElementById("autoClicker").textContent = `Szerelem Örök (+${autoValue}/s) - ${autoClickerCost} pont`;
+            document.getElementById("clickBoost").textContent = `Legjobban Szeretlek (+${clickValue}/katt) - ${clickBoostCost} pont`;
+
+            // Aktiválás a megfelelő gombokon
+            document.getElementById("autoClicker").classList.toggle("button-enabled", count >= autoClickerCost);
+            document.getElementById("clickBoost").classList.toggle("button-enabled", count >= clickBoostCost);
+            document.getElementById("sendLove").classList.toggle("button-enabled", count >= sendLoveCost);
+            document.getElementById("hug").classList.toggle("button-enabled", count >= hugCost);
+            document.getElementById("sendRose").classList.toggle("button-enabled", count >= sendRoseCost);
+
+            let progress = Math.min((count / 100000) * 100, 100);
+            document.getElementById("progressBar").style.width = `${progress}%`;
+
+            if (progress === 100) {
+                alert(`💖 Ennél jobban már szeretni nem lehet, ${userName}! 💖`);
+                count = 0;
+                updateDisplay();
+            }
+
+            // Romantikus funkciók
+            if (count % 50000 === 0 && count !== 0) {
+                createHeart();
+            }
+
+            if (count % 10000 === 0 && count !== 0) {
+                sendLoveMessage();
+            }
+
+            if (count % 50 === 0 && count !== 0) {
+                createRoseFall();
+            }
+        }
+
+        function createHeart() {
+            const heart = document.createElement("div");
+            heart.className = "heart";
+            heart.textContent = "❤️";
+            document.body.appendChild(heart);
+            setTimeout(() => heart.remove(), 2000);
+        }
+
+        function sendLoveMessage() {
+            const messages = [
+                `${userName}, szeretlek! 💕`,
+                "Még több puszi! 😘",
+                "A szíved mindig ott lesz! 💖"
+            ];
+            const message = messages[Math.floor(Math.random() * messages.length)];
+            alert(message);
+        }
+
+        function createRoseFall() {
+            const rose = document.createElement("div");
+            rose.className = "rosefall";
+            rose.textContent = "🌹";
+            document.body.appendChild(rose);
+            setTimeout(() => rose.remove(), 4000);
+        }
+
+        // Intervalum a másodpercenkénti gyűjtéshez
+        setInterval(() => {
+            count += autoValue;
+            updateDisplay();
+        }, 1000);
+
+    </script>
+
+    <div class="container" onclick="incrementCounter()">
+        <h1>Szeretlek <span id="userName"></span></h1>
+        <p>Ennyiszer</p>
+        <div class="counter">❤️ <span id="count">0</span></div>
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+        <div class="shop">
+            <button id="autoClicker" class="button-disabled" onclick="buyAutoClicker()">Szerelem Örök (+1/s) - 10 pont</button>
+            <button id="clickBoost" class="button-disabled" onclick="buyClickBoost()">Legjobban Szeretlek (+1/katt) - 20 pont</button>
+        </div>
+        <div class="gift-shop">
+            <button id="sendLove" class="button-disabled" onclick="sendLove(event)">💌 Küldj egy virtuális puszit! - 50 pont</button>
+            <button id="hug" class="button-disabled" onclick="hug(event)">🤗 Ölelés! - 100 pont</button>
+            <button id="sendRose" class="button-disabled" onclick="sendRose(event)">🌹 Küldj egy rózsát! - 150 pont</button>
+        </div>
+    </div>
+</body>
+</html>
